@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.Usuario.dto.UsuarioViajeDTO;
 import com.example.demo.Usuario.model.Usuario;
 import com.example.demo.Usuario.repository.UsuarioRepository;
+import com.example.demo.Usuario.servicios.CuentaServicio;
 import com.example.demo.Usuario.servicios.UsuarioServicio;
 import com.example.demo.Usuario.servicios.ViajeServicio;
 
@@ -26,6 +27,8 @@ public class UsuarioController {
     @Autowired
     private UsuarioServicio usuarioServ;
 
+    @Autowired
+    private CuentaServicio cuentaServicio;
 
     @GetMapping
     public List<Usuario> listarUsuarios(){
@@ -33,8 +36,21 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public void grabarCarrera(@RequestBody Usuario usuario){
-        repo.save(usuario);
+    public Usuario crearUsuario(@RequestBody Usuario usuario){
+        return repo.save(usuario);
+    }
+
+    @GetMapping("anularCuenta/{idUsuario}/{idCuenta}")
+    public String anularCuenta(@PathVariable Long idUsuario, @PathVariable Long idCuenta) {
+
+        // Busca usuario y comprueba si es administrador
+        Usuario usuario = repo.findById(idUsuario).orElse(null);
+        if (usuario.getRol() == 'a') {
+            String intentarAnularCuenta = cuentaServicio.anularCuenta(idCuenta);
+            return intentarAnularCuenta;
+        }
+        
+        return "El usuario no es administrador";
     }
 
     @GetMapping("/dameSaldo/{id}")
@@ -42,11 +58,6 @@ public class UsuarioController {
         return usuarioServ.dameSaldo(id);
 
     }
-    /* @GetMapping("/rol/{id}")
-     public char xRol(@PathVariable Integer id){
-         
-        return repo.xRol(id);
-     } */
 
     @GetMapping("/rolAdmin/{id}")
      public boolean xRolAdmin(@PathVariable Integer id){
