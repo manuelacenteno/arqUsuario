@@ -1,6 +1,5 @@
 package com.example.demo.Usuario.servicios;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,23 +25,30 @@ public class ViajeServicio {
     private final RestTemplate rest;
 
     @Autowired
-    public ViajeServicio(RestTemplate rest){
+    public ViajeServicio(RestTemplate rest) {
         this.rest = rest;
 
     }
 
-    public String enviarViaje(UsuarioViajeDTO v){
-        return rest.getForEntity(viajeURL + "/iniciar/" + v.getIdUsuarioServ() + "/" + v.getIdUsuario() , String.class).getBody();
+    public String enviarViaje(UsuarioViajeDTO v) {
+        return rest.getForEntity(viajeURL + "/iniciar/" + v.getIdUsuarioServ() + "/" + v.getIdUsuario(), String.class)
+                .getBody();
     }
 
     public List<ReporteMonopatinesPorViajeDTO> obtenerReportePorViaje(int cantViajes, int anio) {
-        String url = viajeURL+"/obtenerReporteMonopatinesPorViaje/"+cantViajes+"/"+anio; 
+        String url = viajeURL + "/obtenerReporteMonopatinesPorViaje/" + cantViajes + "/" + anio;
         ResponseEntity<List<ReporteMonopatinesPorViajeDTO>> response = rest.exchange(
                 url,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<ReporteMonopatinesPorViajeDTO>>() {});
-                return response.getBody();
+                new ParameterizedTypeReference<List<ReporteMonopatinesPorViajeDTO>>() {
+                });
+        return response.getBody();
     }
-   
+
+    public Double getTotalFacturadoEnRangoDeMeses(int mesInicio, int mesFin, int anio) {
+        return rest.getForEntity(viajeURL + "/totalFacturadoEnRangoDeMeses/" + mesInicio + "/" + mesFin + "/" + anio,
+                Double.class).getBody();
+    }
+
 }

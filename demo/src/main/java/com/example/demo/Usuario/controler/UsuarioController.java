@@ -68,6 +68,13 @@ public class UsuarioController {
         return reporte;
     }
 
+    @GetMapping("/totalFacturadoEnRangoDeMeses/{mesInicio}/{mesFin}/{anio}")
+    public String obtenerTotalFacturadoEnRangoDeMeses(@PathVariable int mesInicio, @PathVariable int mesFin,
+            @PathVariable int anio) {
+        Double totalFacturado = viajeServicio.getTotalFacturadoEnRangoDeMeses(mesInicio, mesFin, anio);
+        return "El total facturado fue:" + totalFacturado;
+    }
+
     private boolean esAdmin(Long idUsuario) {
         Usuario usuario = repo.findById(idUsuario).orElse(null);
         if (usuario != null && usuario.getRol() == 'a')
