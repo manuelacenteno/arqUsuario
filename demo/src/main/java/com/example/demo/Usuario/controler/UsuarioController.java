@@ -2,6 +2,7 @@ package com.example.demo.Usuario.controler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,6 +74,12 @@ public class UsuarioController {
             @PathVariable int anio) {
         Double totalFacturado = viajeServicio.getTotalFacturadoEnRangoDeMeses(mesInicio, mesFin, anio);
         return "El total facturado fue:" + totalFacturado;
+    }
+
+    @GetMapping("/cantidadMonopatines")
+    public Map<String, Integer> obtenerMonopatinesEnTaller() {
+        Map<String, Integer> resultado = monoServicio.obtenerMonopatinesEnTaller();
+        return resultado;
     }
 
     private boolean esAdmin(Long idUsuario) {
