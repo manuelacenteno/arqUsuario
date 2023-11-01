@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Usuario.dto.ReporteMonopatinesPorViajeDTO;
 import com.example.demo.Usuario.dto.UsuarioViajeDTO;
+import com.example.demo.Usuario.model.Parada;
 import com.example.demo.Usuario.model.Tarifa;
 import com.example.demo.Usuario.model.Usuario;
 import com.example.demo.Usuario.repository.UsuarioRepository;
 import com.example.demo.Usuario.servicios.CuentaServicio;
 import com.example.demo.Usuario.servicios.MonopatinServicio;
+import com.example.demo.Usuario.servicios.ParadasServicio;
 import com.example.demo.Usuario.servicios.TarifaServicio;
 import com.example.demo.Usuario.servicios.UsuarioServicio;
 import com.example.demo.Usuario.servicios.ViajeServicio;
@@ -46,6 +48,9 @@ public class UsuarioController {
 
     @Autowired
     private TarifaServicio tarifaServicio;
+
+    @Autowired
+    private ParadasServicio paradasServicio;
 
     @GetMapping
     public List<Usuario> listarUsuarios() {
@@ -97,6 +102,13 @@ public class UsuarioController {
         }
         return "El usuario no es admin";
     }
+
+    @GetMapping("/paradasCercanas/{latitud}/{longitud}") 
+    public List<Parada> obtenerParadasCercanas(@PathVariable Double latitud, @PathVariable Double longitud) {
+        List<Parada> paradas = paradasServicio.getParadas(latitud, longitud);
+        return paradas;
+    }
+
 
     private boolean esAdmin(Long idUsuario) {
         Usuario usuario = repo.findById(idUsuario).orElse(null);
