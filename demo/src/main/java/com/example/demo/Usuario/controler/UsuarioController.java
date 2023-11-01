@@ -1,10 +1,12 @@
 package com.example.demo.Usuario.controler;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Usuario.dto.ReporteMonopatinesPorViajeDTO;
 import com.example.demo.Usuario.dto.UsuarioViajeDTO;
+import com.example.demo.Usuario.model.Tarifa;
 import com.example.demo.Usuario.model.Usuario;
 import com.example.demo.Usuario.repository.UsuarioRepository;
 import com.example.demo.Usuario.servicios.CuentaServicio;
 import com.example.demo.Usuario.servicios.MonopatinServicio;
+import com.example.demo.Usuario.servicios.TarifaServicio;
 import com.example.demo.Usuario.servicios.UsuarioServicio;
 import com.example.demo.Usuario.servicios.ViajeServicio;
 
@@ -39,6 +43,9 @@ public class UsuarioController {
 
     @Autowired
     private ViajeServicio viajeServicio;
+
+    @Autowired
+    private TarifaServicio tarifaServicio;
 
     @GetMapping
     public List<Usuario> listarUsuarios() {
@@ -80,6 +87,15 @@ public class UsuarioController {
     public Map<String, Integer> obtenerMonopatinesEnTaller() {
         Map<String, Integer> resultado = monoServicio.obtenerMonopatinesEnTaller();
         return resultado;
+    }
+
+    @GetMapping("/ajustarTarifa/{idUsuario}")
+    public String ajustarTarifa(@PathVariable Long idUsuario, @RequestBody Tarifa tarifa) {
+        if (esAdmin(idUsuario)) {
+            tarifaServicio.aplicarTarifa(tarifa);
+            return "Tarifa aplicada";
+        }
+        return "El usuario no es admin";
     }
 
     private boolean esAdmin(Long idUsuario) {
