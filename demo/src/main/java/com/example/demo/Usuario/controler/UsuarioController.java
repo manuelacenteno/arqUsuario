@@ -57,7 +57,7 @@ public class UsuarioController {
     private JWTService jwtService;
 
     @GetMapping("/verificarToken/{token}")
-    public Boolean verificarToken(@PathVariable String token) {
+    public String verificarToken(@PathVariable String token) {
         return jwtService.verificarToken(token);
     }
 

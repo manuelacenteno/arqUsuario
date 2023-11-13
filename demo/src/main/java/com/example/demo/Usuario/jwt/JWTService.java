@@ -6,10 +6,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import javax.sound.midi.Sequence;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,14 +54,24 @@ public class JWTService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public boolean verificarToken(String token) {
+    public String verificarToken(String token) {
         try {
-            String username = getUsernameFromToken(token);
-            System.out.println("usuario"+ username);
+            // Obtiene los claims a partir del token y conociendo la secret key
+            Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+            String username = claims.getSubject();
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+            System.out.println("usuario: "+ username);
+            String role = userDetails.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse("DEFAULT_ROLE");
+            System.out.println("rol: "+ role);
+            if (username.equals(userDetails.getUsername()) && !isTokenExpired(token)) {
+                return role;
+            }
+            return null;
         } catch (Exception err) {
-            return false;
+            return null;
         }
     }
 
