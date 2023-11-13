@@ -112,7 +112,7 @@ public class UsuarioController {
 
     private boolean esAdmin(Long idUsuario) {
         Usuario usuario = repo.findById(idUsuario).orElse(null);
-        if (usuario != null && usuario.getRol() == 'a')
+        if (usuario != null && usuario.getRol() == "ADMIN")
             return true;
         return false;
     }
@@ -123,13 +123,13 @@ public class UsuarioController {
 
     }
 
-    @GetMapping("/rolAdmin/{id}")
-    public boolean xRolAdmin(@PathVariable Integer id) {
-        if (repo.xRol(id) == 'a') {
-            return true;
-        }
-        return false;
-    }
+//    @GetMapping("/rolAdmin/{id}")
+//    public boolean xRolAdmin(@PathVariable Integer id) {
+//        if (repo.xRol(id) == "ADMIN") {
+//            return true;
+//        }
+//        return false;
+//    }
 
     @GetMapping("/rolEncargado/{id}")
     public boolean xRolEncargado(@PathVariable Integer id) {

@@ -1,5 +1,6 @@
 package com.example.demo.Usuario.model;
 
+import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -7,9 +8,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Builder;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+@Builder
 @Entity
-public class Usuario {
+public class Usuario implements UserDetails {
     @Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idUsuario;
@@ -22,22 +29,26 @@ public class Usuario {
     @Column
     private String email;
     @Column
-    private char rol;
+    private String rol;
+    @Column
+    private String password;
     
-    private List<Object> cuentas;
+    //private List<Object> cuentas;
 
     
 
     public Usuario(){
         super();
     }
-    
-    public Usuario(String nombre, String apellido, Integer telefono, String email, char rol){
+
+    public Usuario(Integer idUsuario, String nombre, String apellido, Integer telefono, String email, String rol, String password){
+        this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
         this.email = email;
         this.rol = rol;
+        this.password = password;
     }
 
     public Integer getIdUsuario() {
@@ -76,15 +87,47 @@ public class Usuario {
         this.email = email;
     }
 
-    public char getRol() {
+    public String getRol() {
         return rol;
     }
 
-    public void setRol(char rol) {
+    public void setRol(String rol) {
         this.rol = rol;
     }
 
-    
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority((this.rol)));
+    }
 
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.nombre;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
