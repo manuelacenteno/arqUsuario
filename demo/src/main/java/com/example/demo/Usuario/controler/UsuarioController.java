@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.example.demo.Usuario.jwt.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,6 +52,14 @@ public class UsuarioController {
 
     @Autowired
     private ParadasServicio paradasServicio;
+
+    @Autowired
+    private JWTService jwtService;
+
+    @GetMapping("/verificarToken/{token}")
+    public Boolean verificarToken(@PathVariable String token) {
+        return jwtService.verificarToken(token);
+    }
 
     @GetMapping
     public List<Usuario> listarUsuarios() {

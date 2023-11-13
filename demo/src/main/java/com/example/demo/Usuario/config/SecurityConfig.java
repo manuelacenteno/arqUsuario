@@ -32,6 +32,8 @@ public class SecurityConfig {
                         authRequest
                                 .requestMatchers("/auth/**")
                                 .permitAll()
+                                .requestMatchers("/usuarios/verificarToken/**")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(sessionManager ->

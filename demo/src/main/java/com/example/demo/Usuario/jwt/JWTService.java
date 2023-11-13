@@ -5,8 +5,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.security.Key;
 import java.util.Date;
@@ -16,6 +18,9 @@ import java.util.function.Function;
 
 @Service
 public class JWTService {
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     private static final String SECRET_KEY= "23842834283SECRETKEY21321328428312831823814288524253";
     public String getToken(UserDetails user) {
@@ -45,6 +50,17 @@ public class JWTService {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public boolean verificarToken(String token) {
+        try {
+            String username = getUsernameFromToken(token);
+            System.out.println("usuario"+ username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        } catch (Exception err) {
+            return false;
+        }
     }
 
     private Claims getAllClaims(String token) {
