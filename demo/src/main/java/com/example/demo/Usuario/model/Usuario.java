@@ -3,13 +3,8 @@ package com.example.demo.Usuario.model;
 import java.util.Collection;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class Usuario implements UserDetails {
     @Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer idUsuario;
+    private Integer id;
     @Column
     private String nombre;
     @Column
@@ -32,27 +27,32 @@ public class Usuario implements UserDetails {
     private String rol;
     @Column
     private String password;
-    
-    //private List<Object> cuentas;
 
-    
+    @ManyToMany
+    @JoinTable(
+            name = "usuario_cuenta",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "cuenta_id")
+    )
+    private List<Cuenta> cuentas;
 
     public Usuario(){
         super();
     }
 
-    public Usuario(Integer idUsuario, String nombre, String apellido, Integer telefono, String email, String rol, String password){
-        this.idUsuario = idUsuario;
+    public Usuario(Integer id, String nombre, String apellido, Integer telefono, String email, String rol, String password, List<Cuenta> cuentas) {
+        this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
         this.email = email;
         this.rol = rol;
         this.password = password;
+        this.cuentas = cuentas;
     }
 
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public Integer getId() {
+        return id;
     }
 
     public String getNombre() {

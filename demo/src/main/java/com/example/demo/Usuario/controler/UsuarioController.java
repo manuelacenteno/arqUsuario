@@ -125,7 +125,7 @@ public class UsuarioController {
 
     @GetMapping("/dameSaldo/{idCuenta}")
     public Float dameSaldo(@PathVariable Long idCuenta) {
-        return usuarioServ.dameSaldo(idCuenta);
+        return cuentaServicio.dameSaldo(idCuenta);
     }
 
     private boolean esAdmin(String authorization) {

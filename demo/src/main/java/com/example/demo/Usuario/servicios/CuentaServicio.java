@@ -1,5 +1,6 @@
 package com.example.demo.Usuario.servicios;
 
+import com.example.demo.Usuario.controler.CuentaController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -10,19 +11,15 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class CuentaServicio {
-    @Value("${cuentaURL}")
-    private String cuentaURL;
-
-    private final RestTemplate rest;
 
     @Autowired
-    public CuentaServicio(RestTemplate rest){
-        this.rest = rest;
+    private CuentaController cuentaController;
+
+    public String anularCuenta(Long idCuenta) {
+        return cuentaController.anularCuenta(idCuenta);
     }
 
-    @PutMapping
-    public String anularCuenta(Long idCuenta) {
-        String response = rest.exchange(cuentaURL + "/anularCuenta/" + idCuenta, HttpMethod.PUT, null, String.class).getBody();
-        return response;
+    public Float dameSaldo(Long idCuenta){
+        return cuentaController.tieneSaldo(idCuenta);
     }
 }

@@ -9,22 +9,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class UsuarioServicio {
-    @Value("${cuentaURL}")
-    private String cuentaURL;
-    private final RestTemplate rest;
-
-    @Autowired
-    public UsuarioServicio(RestTemplate rest){
-        this.rest = rest;
-    }
     @Autowired
     private UsuarioRepository userRepository;
-
-    //llamo a cuenta
-    public Float dameSaldo(Long idCuenta){
-        return rest.getForEntity(cuentaURL + "/tieneSaldo/" + idCuenta, Float.class).getBody();
-    }
-
     public Usuario createUser(Usuario user) {
         return userRepository.save(user);
     }
