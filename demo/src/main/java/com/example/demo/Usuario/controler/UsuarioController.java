@@ -8,12 +8,7 @@ import java.util.Map;
 import com.example.demo.Usuario.jwt.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.Usuario.dto.ReporteMonopatinesPorViajeDTO;
 import com.example.demo.Usuario.dto.UsuarioViajeDTO;
@@ -71,41 +66,51 @@ public class UsuarioController {
         return repo.save(usuario);
     }
 
-    @GetMapping("/anularCuenta/{idUsuario}/{idCuenta}")
-    public String anularCuenta(@PathVariable Long idUsuario, @PathVariable Long idCuenta) {
+    @GetMapping("/anularCuenta/{idCuenta}")
+    public String anularCuenta(@RequestHeader("Authorization") String authorization,
+                               @PathVariable Long idUsuario, @PathVariable Long idCuenta) {
 
         // Busca usuario y comprueba si es administrador
-        if (esAdmin(idUsuario)) {
+        if (esAdmin(authorization)) {
             String intentarAnularCuenta = cuentaServicio.anularCuenta(idCuenta);
             return intentarAnularCuenta;
         }
 
-        return "El usuario no es administrador";
+        return "Necesitas permisos de administrador.";
     }
 
     @GetMapping("/reporteMonopatines/{cantViajes}/{anio}")
     public List<ReporteMonopatinesPorViajeDTO> obtenerReportePorViaje(
-            @PathVariable int cantViajes, @PathVariable int anio) {
-        List<ReporteMonopatinesPorViajeDTO> reporte = viajeServicio.obtenerReportePorViaje(cantViajes, anio);
-        return reporte;
+            @RequestHeader("Authorization") String authorization, @PathVariable int cantViajes, @PathVariable int anio) {
+        if (esAdmin(authorization)) {
+            List<ReporteMonopatinesPorViajeDTO> reporte = viajeServicio.obtenerReportePorViaje(cantViajes, anio);
+            return reporte;
+        }
+        return null;
     }
 
     @GetMapping("/totalFacturadoEnRangoDeMeses/{mesInicio}/{mesFin}/{anio}")
-    public String obtenerTotalFacturadoEnRangoDeMeses(@PathVariable int mesInicio, @PathVariable int mesFin,
-            @PathVariable int anio) {
-        Double totalFacturado = viajeServicio.getTotalFacturadoEnRangoDeMeses(mesInicio, mesFin, anio);
-        return "El total facturado fue:" + totalFacturado;
+    public String obtenerTotalFacturadoEnRangoDeMeses(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable int mesInicio, @PathVariable int mesFin, @PathVariable int anio) {
+        if (esAdmin(authorization)) {
+            Double totalFacturado = viajeServicio.getTotalFacturadoEnRangoDeMeses(mesInicio, mesFin, anio);
+            return "El total facturado fue:" + totalFacturado;
+        }
+        return "Necesitas permisos de administrador.";
     }
 
     @GetMapping("/cantidadMonopatines")
-    public Map<String, Integer> obtenerMonopatinesEnTaller() {
-        Map<String, Integer> resultado = monoServicio.obtenerMonopatinesEnTaller();
-        return resultado;
+    public Map<String, Integer> obtenerMonopatinesEnTaller(@RequestHeader("Authorization") String authorization) {
+        if (esAdmin(authorization)) {
+            return monoServicio.obtenerMonopatinesEnTaller();
+        }
+        return null;
     }
 
-    @GetMapping("/ajustarTarifa/{idUsuario}")
-    public String ajustarTarifa(@PathVariable Long idUsuario, @RequestBody Tarifa tarifa) {
-        if (esAdmin(idUsuario)) {
+    @GetMapping("/ajustarTarifa")
+    public String ajustarTarifa(@RequestHeader("Authorization") String authorization, @RequestBody Tarifa tarifa) {
+        if (esAdmin(authorization)) {
             tarifaServicio.aplicarTarifa(tarifa);
             return "Tarifa aplicada";
         }
@@ -118,34 +123,15 @@ public class UsuarioController {
         return paradas;
     }
 
+    @GetMapping("/dameSaldo/{idCuenta}")
+    public Float dameSaldo(@PathVariable Long idCuenta) {
+        return usuarioServ.dameSaldo(idCuenta);
+    }
 
-    private boolean esAdmin(Long idUsuario) {
-        Usuario usuario = repo.findById(idUsuario).orElse(null);
-        if (usuario != null && usuario.getRol() == "ADMIN")
+    private boolean esAdmin(String authorization) {
+        String tokenSinBearer = authorization.substring(7);
+        if (jwtService.isAdmin(tokenSinBearer))
             return true;
         return false;
     }
-
-    @GetMapping("/dameSaldo/{id}")
-    public Float dameSaldo(@PathVariable Long id) {
-        return usuarioServ.dameSaldo(id);
-
-    }
-
-//    @GetMapping("/rolAdmin/{id}")
-//    public boolean xRolAdmin(@PathVariable Integer id) {
-//        if (repo.xRol(id) == "ADMIN") {
-//            return true;
-//        }
-//        return false;
-//    }
-
-    @GetMapping("/rolEncargado/{id}")
-    public boolean xRolEncargado(@PathVariable Integer id) {
-        if (repo.xRol(id) == 'g') {
-            return true;
-        }
-        return false;
-    }
-
 }

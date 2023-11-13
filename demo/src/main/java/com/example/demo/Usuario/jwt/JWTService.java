@@ -75,6 +75,23 @@ public class JWTService {
         }
     }
 
+    public boolean isAdmin(String token) {
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        String username = claims.getSubject();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        System.out.println(userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("DEFAULT_ROLE"));
+        if (userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("DEFAULT_ROLE").contains("ADMIN")) {
+            return true;
+        }
+        return false;
+    }
+
     private Claims getAllClaims(String token) {
         return Jwts
                 .parserBuilder()
