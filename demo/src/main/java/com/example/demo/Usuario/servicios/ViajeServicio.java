@@ -30,25 +30,41 @@ public class ViajeServicio {
 
     }
 
-    public String enviarViaje(UsuarioViajeDTO v) {
-        return rest.getForEntity(viajeURL + "/iniciar/" + v.getIdUsuarioServ() + "/" + v.getIdUsuario(), String.class)
-                .getBody();
+    public Double getTotalFacturadoEnRangoDeMeses(int mesInicio, int mesFin, int anio, String authorization) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", authorization);
+            HttpEntity<Object> entity = new HttpEntity<>(headers);
+
+            // Realiza la solicitud GET
+            ResponseEntity<Double> response = rest.exchange(
+                    viajeURL + "/totalFacturadoEnRangoDeMeses/" + mesInicio + "/" + mesFin + "/" + anio,
+                    HttpMethod.GET,
+                    entity,
+                    Double.class);
+
+            return response.getBody();
     }
 
-    public List<ReporteMonopatinesPorViajeDTO> obtenerReportePorViaje(int cantViajes, int anio) {
+    public List<ReporteMonopatinesPorViajeDTO> obtenerReportePorViaje(int cantViajes, int anio, String authorization) {
         String url = viajeURL + "/obtenerReporteMonopatinesPorViaje/" + cantViajes + "/" + anio;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authorization);
+
+        // Configura la entidad de la solicitud con los headers
         ResponseEntity<List<ReporteMonopatinesPorViajeDTO>> response = rest.exchange(
                 url,
                 HttpMethod.GET,
-                null,
+                new HttpEntity<>(headers), // Incluye los encabezados en la solicitud
                 new ParameterizedTypeReference<List<ReporteMonopatinesPorViajeDTO>>() {
                 });
+
         return response.getBody();
     }
 
-    public Double getTotalFacturadoEnRangoDeMeses(int mesInicio, int mesFin, int anio) {
-        return rest.getForEntity(viajeURL + "/totalFacturadoEnRangoDeMeses/" + mesInicio + "/" + mesFin + "/" + anio,
-                Double.class).getBody();
+    public String enviarViaje(UsuarioViajeDTO v) {
+        return rest.getForEntity(viajeURL + "/iniciar/" + v.getIdUsuarioServ() + "/" + v.getIdUsuario(), String.class)
+                .getBody();
     }
 
 }

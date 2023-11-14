@@ -67,8 +67,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/anularCuenta/{idCuenta}")
-    public String anularCuenta(@RequestHeader("Authorization") String authorization,
-                               @PathVariable Long idUsuario, @PathVariable Long idCuenta) {
+    public String anularCuenta(@RequestHeader("Authorization") String authorization, @PathVariable Long idCuenta) {
 
         // Busca usuario y comprueba si es administrador
         if (esAdmin(authorization)) {
@@ -83,7 +82,7 @@ public class UsuarioController {
     public List<ReporteMonopatinesPorViajeDTO> obtenerReportePorViaje(
             @RequestHeader("Authorization") String authorization, @PathVariable int cantViajes, @PathVariable int anio) {
         if (esAdmin(authorization)) {
-            List<ReporteMonopatinesPorViajeDTO> reporte = viajeServicio.obtenerReportePorViaje(cantViajes, anio);
+            List<ReporteMonopatinesPorViajeDTO> reporte = viajeServicio.obtenerReportePorViaje(cantViajes, anio, authorization);
             return reporte;
         }
         return null;
@@ -94,7 +93,7 @@ public class UsuarioController {
             @RequestHeader("Authorization") String authorization,
             @PathVariable int mesInicio, @PathVariable int mesFin, @PathVariable int anio) {
         if (esAdmin(authorization)) {
-            Double totalFacturado = viajeServicio.getTotalFacturadoEnRangoDeMeses(mesInicio, mesFin, anio);
+            Double totalFacturado = viajeServicio.getTotalFacturadoEnRangoDeMeses(mesInicio, mesFin, anio, authorization);
             return "El total facturado fue:" + totalFacturado;
         }
         return "Necesitas permisos de administrador.";
