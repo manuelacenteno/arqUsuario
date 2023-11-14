@@ -110,7 +110,7 @@ public class UsuarioController {
     @GetMapping("/ajustarTarifa")
     public String ajustarTarifa(@RequestHeader("Authorization") String authorization, @RequestBody Tarifa tarifa) {
         if (esAdmin(authorization)) {
-            tarifaServicio.aplicarTarifa(tarifa);
+            tarifaServicio.aplicarTarifa(tarifa, authorization);
             return "Tarifa aplicada";
         }
         return "El usuario no es admin";
