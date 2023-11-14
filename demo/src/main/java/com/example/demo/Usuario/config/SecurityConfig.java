@@ -34,6 +34,8 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers("/usuarios/verificarToken/**")
                                 .permitAll()
+                                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(sessionManager ->

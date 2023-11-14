@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.demo.Usuario.jwt.JWTService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,21 +53,25 @@ public class UsuarioController {
     private JWTService jwtService;
 
     @GetMapping("/verificarToken/{token}")
+    @Operation(summary = "Verificar token", description = "Le llega un token en forma de string y si es valido devuelve el rol del usuario")
     public String verificarToken(@PathVariable String token) {
         return jwtService.verificarToken(token);
     }
 
     @GetMapping
+    @Operation(summary = "Lista usuarios", description = "FindAll de los usuarios en el repositorio")
     public List<Usuario> listarUsuarios() {
         return repo.findAll();
     }
 
     @PostMapping
+    @Operation(summary = "Crear usuario", description = "Recibe un usuario por el body y lo guarda en el repositorio")
     public Usuario crearUsuario(@RequestBody Usuario usuario) {
         return repo.save(usuario);
     }
 
     @GetMapping("/anularCuenta/{idCuenta}")
+    @Operation(summary = "Anula/Deshabilita cuenta", description = "Confirma si el token del solicitante es de un admin y deshabilita la cuenta")
     public String anularCuenta(@RequestHeader("Authorization") String authorization, @PathVariable Long idCuenta) {
 
         // Busca usuario y comprueba si es administrador
@@ -79,6 +84,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/reporteMonopatines/{cantViajes}/{anio}")
+    @Operation(summary = "Reporte de monopatines por viaje y año", description = "Confirma si es admin y devuelve un reporte en forma de DTO")
     public List<ReporteMonopatinesPorViajeDTO> obtenerReportePorViaje(
             @RequestHeader("Authorization") String authorization, @PathVariable int cantViajes, @PathVariable int anio) {
         if (esAdmin(authorization)) {
@@ -89,6 +95,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/totalFacturadoEnRangoDeMeses/{mesInicio}/{mesFin}/{anio}")
+    @Operation(summary = "Total facturado en un rango de 2 meses", description = "Confirma si es admin y devuelve se comunica con 'Viaje' que devuelve el total facturado")
     public String obtenerTotalFacturadoEnRangoDeMeses(
             @RequestHeader("Authorization") String authorization,
             @PathVariable int mesInicio, @PathVariable int mesFin, @PathVariable int anio) {
@@ -100,6 +107,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/cantidadMonopatines")
+    @Operation(summary = "Reporte de monopatines en taller y en funcionamiento", description = "Confirma si es admin y devuelve con un map: Estado del monopatin, cantidad de monopatines")
     public Map<String, Integer> obtenerMonopatinesEnTaller(@RequestHeader("Authorization") String authorization) {
         if (esAdmin(authorization)) {
             return monoServicio.obtenerMonopatinesEnTaller(authorization);
@@ -108,6 +116,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/ajustarTarifa")
+    @Operation(summary = "Ajusta tarifa", description = "Confirma si es admin y se comunica con el servicio 'Tarifa' enviandole en el cuerpo una tarifa para que la guarde en su bbdd")
     public String ajustarTarifa(@RequestHeader("Authorization") String authorization, @RequestBody Tarifa tarifa) {
         if (esAdmin(authorization)) {
             tarifaServicio.aplicarTarifa(tarifa, authorization);
@@ -116,7 +125,8 @@ public class UsuarioController {
         return "El usuario no es admin";
     }
 
-    @GetMapping("/paradasCercanas/{latitud}/{longitud}") 
+    @GetMapping("/paradasCercanas/{latitud}/{longitud}")
+    @Operation(summary = "Obtener paradas cercanas", description = "Se comunica con el servicio 'Parada' para obtener un listado de las paradas mas cercanas")
     public List<Parada> obtenerParadasCercanas(@RequestHeader("Authorization") String authorization,
                                                @PathVariable Double latitud, @PathVariable Double longitud) {
         List<Parada> paradas = paradasServicio.getParadas(latitud, longitud, authorization);
