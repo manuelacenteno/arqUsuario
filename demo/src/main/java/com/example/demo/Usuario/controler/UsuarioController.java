@@ -102,7 +102,7 @@ public class UsuarioController {
     @GetMapping("/cantidadMonopatines")
     public Map<String, Integer> obtenerMonopatinesEnTaller(@RequestHeader("Authorization") String authorization) {
         if (esAdmin(authorization)) {
-            return monoServicio.obtenerMonopatinesEnTaller();
+            return monoServicio.obtenerMonopatinesEnTaller(authorization);
         }
         return null;
     }
