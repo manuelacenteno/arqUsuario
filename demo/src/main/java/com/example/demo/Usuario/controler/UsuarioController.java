@@ -1,18 +1,14 @@
 package com.example.demo.Usuario.controler;
 
-import java.util.Date;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.example.demo.Usuario.jwt.JWTService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.Usuario.dto.ReporteMonopatinesPorViajeDTO;
-import com.example.demo.Usuario.dto.UsuarioViajeDTO;
 import com.example.demo.Usuario.model.Parada;
 import com.example.demo.Usuario.model.Tarifa;
 import com.example.demo.Usuario.model.Usuario;
