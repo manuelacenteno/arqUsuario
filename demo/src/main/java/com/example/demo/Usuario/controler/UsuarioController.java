@@ -117,11 +117,13 @@ public class UsuarioController {
     }
 
     @GetMapping("/paradasCercanas/{latitud}/{longitud}") 
-    public List<Parada> obtenerParadasCercanas(@PathVariable Double latitud, @PathVariable Double longitud) {
-        List<Parada> paradas = paradasServicio.getParadas(latitud, longitud);
+    public List<Parada> obtenerParadasCercanas(@RequestHeader("Authorization") String authorization,
+                                               @PathVariable Double latitud, @PathVariable Double longitud) {
+        List<Parada> paradas = paradasServicio.getParadas(latitud, longitud, authorization);
         return paradas;
     }
 
+    // TODO: Segurizar cuando la solicitud entrante este configurada para envíar header.
     @GetMapping("/dameSaldo/{idCuenta}")
     public Float dameSaldo(@PathVariable Long idCuenta) {
         return cuentaServicio.dameSaldo(idCuenta);

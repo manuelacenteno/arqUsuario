@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,14 +29,21 @@ public class ParadasServicio {
         this.rest = rest;
     }
 
-    @GetMapping
-    public List<Parada> getParadas(Double latitud, Double longitud) {
+    public List<Parada> getParadas(Double latitud, Double longitud, String authorization) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authorization);
+
+        // Configura la entidad de la solicitud con los headers
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+
+        // Realiza la solicitud GET
         ResponseEntity<List<Parada>> response = rest.exchange(
-                paradasURL+"/parada_cercanas/"+longitud+"/"+latitud,
+                paradasURL + "/parada_cercanas/" + longitud + "/" + latitud,
                 HttpMethod.GET,
-                null,
+                requestEntity, // Incluye los headers en la solicitud
                 new ParameterizedTypeReference<List<Parada>>() {
                 });
+
         return response.getBody();
     }
 }
